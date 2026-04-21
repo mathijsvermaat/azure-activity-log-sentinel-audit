@@ -19,10 +19,43 @@ The full `WorkspaceId` (ARM resource ID) is preserved in the `$results` variable
 
 ## Prerequisites
 
-- An Azure account with at least **Reader** on the subscriptions you want to audit.
+- An Azure account with sufficient RBAC (see [Permissions](#permissions) below).
 - One of:
   - **Azure Cloud Shell** (PowerShell) — recommended, nothing to install, already authenticated.
   - Local **PowerShell 7+** with the `Az.Accounts` module installed (`Install-Module Az.Accounts`).
+
+## Permissions
+
+The script performs a single read per subscription:
+
+```
+GET /subscriptions/{id}/providers/microsoft.insights/diagnosticSettings
+```
+
+This only requires the `Microsoft.Insights/diagnosticSettings/read` action, which is included in any of the following built-in roles:
+
+| Built-in role            | Works | Notes                                          |
+| ------------------------ | :---: | ---------------------------------------------- |
+| **Reader**               |   ✅   | Simplest, recommended                          |
+| **Monitoring Reader**    |   ✅   | More least-privilege (monitoring data only)    |
+| **Monitoring Contributor** |   ✅   | Also allows writes — overkill for auditing    |
+| **Owner / Contributor**  |   ✅   | Overkill                                       |
+
+### Tenant-wide coverage
+
+`Get-AzSubscription` only returns subscriptions your identity has at least `Reader` on. To audit **every** subscription in the tenant in one run, assign the role at the **root Management Group (Tenant Root Group)** scope:
+
+1. In Entra → *Properties* → *Access management for Azure resources*, toggle **Yes** to elevate (grants User Access Administrator at root).
+2. In the root management group, assign **Reader** (or **Monitoring Reader**) to the account/service principal running the script.
+3. Revert the elevation toggle afterwards.
+
+### Entra (Azure AD) permissions
+
+No specific directory role is required — the signed-in account just needs to be a member or guest of the tenant. The script uses ARM only, not Microsoft Graph.
+
+### No access?
+
+Subscriptions the caller can't read won't appear in `Get-AzSubscription` and are silently skipped. If a `GET` returns 403 for some reason, the row shows `(error 403)` in the `SettingName` column.
 
 ## How to run
 
