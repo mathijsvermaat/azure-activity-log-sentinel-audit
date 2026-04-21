@@ -1,4 +1,4 @@
-# azure-activity-log-sentinel-audit
+# Azure Activity Log Sentinel audit
 
 PowerShell script to audit Azure Activity Log diagnostic settings across **all subscriptions** in a tenant and verify they are exported to Microsoft Sentinel / Log Analytics.
 
@@ -66,7 +66,3 @@ via `Invoke-AzRestMethod`. This avoids `Set-AzContext` per subscription (faster)
 - Subscription-level diagnostic settings are **not** queryable via Azure Resource Graph today — that's why this script iterates subscriptions.
 - Cloud Shell is bound to a single tenant. For multi-tenant audits, run locally and `Connect-AzAccount -TenantId <id>` for each tenant.
 - Subscriptions the caller can't read are returned with `(error 403)` in `SettingName`.
-
-## License
-
-MIT
