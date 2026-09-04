@@ -1,5 +1,8 @@
 # Azure Activity Log Sentinel audit
 
+> [!NOTE]
+> **Part of the [Sentinel Maturity Model](https://github.com/mathijsvermaat/Sentinel-Maturity)** — tiered guidance for Microsoft Sentinel data-connector onboarding, retention and detection coverage. Use this script to evidence per-subscription coverage for the [Azure Activity Logs connector](https://github.com/mathijsvermaat/Sentinel-Maturity/blob/main/connectors/azure-activity-logs.md), then record the outcome in the [assessment checklist](https://mathijsvermaat.github.io/sentinel-maturity-assessment.html).
+
 PowerShell script to audit Azure Activity Log diagnostic settings across **all subscriptions** in a tenant and verify they are exported to Microsoft Sentinel / Log Analytics.
 
 The Azure portal only shows Activity Log export settings **one subscription at a time** (Activity Log → *Export activity logs* → *Edit Settings*). This script gives you a single, tenant-wide view so you can quickly spot subscriptions that are missing, misconfigured, or sending to the wrong workspace.
@@ -99,3 +102,9 @@ via `Invoke-AzRestMethod`. This avoids `Set-AzContext` per subscription (faster)
 - Subscription-level diagnostic settings are **not** queryable via Azure Resource Graph today — that's why this script iterates subscriptions.
 - Cloud Shell is bound to a single tenant. For multi-tenant audits, run locally and `Connect-AzAccount -TenantId <id>` for each tenant.
 - Subscriptions the caller can't read are returned with `(error 403)` in `SettingName`.
+
+## Related
+
+- **[Sentinel Maturity Model](https://github.com/mathijsvermaat/Sentinel-Maturity)** — the tiered connector guidance model this script belongs to.
+- **[Azure Activity Logs connector guidance](https://github.com/mathijsvermaat/Sentinel-Maturity/blob/main/connectors/azure-activity-logs.md)** — which log categories to enable, retention recommendations and detection rationale.
+- **[Assessment checklist](https://mathijsvermaat.github.io/sentinel-maturity-assessment.html)** — use the output to evidence per-subscription coverage against the Azure Activity Logs connector.
